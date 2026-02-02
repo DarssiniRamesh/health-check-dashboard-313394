@@ -1,0 +1,78 @@
+<section class="page">
+  <header class="page-header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1 class="title">Health Check Dashboard</h1>
+        <p class="subtitle">End-to-end status from frontend to backend API</p>
+      </div>
+    </div>
+
+    <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">
+      <span class="spinner" *ngIf="loading()" aria-hidden="true"></span>
+      <span>{{ loading() ? 'Refreshing…' : 'Refresh' }}</span>
+    </button>
+  </header>
+
+  <main class="content">
+    <div class="card" role="region" aria-label="Backend health status">
+      <div class="card-header">
+        <h2>Backend</h2>
+        <span
+          class="pill"
+          [class.pill-up]="overallStatus() === 'UP'"
+          [class.pill-down]="overallStatus() === 'DOWN'"
+          [class.pill-unknown]="overallStatus() === 'UNKNOWN'"
+        >
+          {{ overallStatus() }}
+        </span>
+      </div>
+
+      <div class="grid">
+        <div class="stat">
+          <div class="label">Database</div>
+          <div class="value">
+            <span
+              class="pill small"
+              [class.pill-up]="dbStatus() === 'UP'"
+              [class.pill-down]="dbStatus() === 'DOWN'"
+              [class.pill-unknown]="dbStatus() === 'UNKNOWN'"
+            >
+              {{ dbStatus() === 'UP' ? 'CONNECTED' : (dbStatus() === 'DOWN' ? 'DISCONNECTED' : 'UNKNOWN') }}
+            </span>
+          </div>
+          <div class="hint" *ngIf="dbDetails()">{{ dbDetails() }}</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">Uptime</div>
+          <div class="value mono">{{ uptimeLabel() }}</div>
+          <div class="hint">Reported by backend (if available)</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">Last successful check</div>
+          <div class="value mono">
+            {{ lastSuccessAt() ? (lastSuccessAt() | date: 'medium') : '—' }}
+          </div>
+          <div class="hint">Updates only on successful responses</div>
+        </div>
+      </div>
+
+      <div class="alert" *ngIf="lastError()">
+        <div class="alert-title">Request error</div>
+        <div class="alert-body">{{ lastError() }}</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span class="muted">
+      Last attempted: {{ lastAttemptAt() ? (lastAttemptAt() | date: 'mediumTime') : '—' }}
+    </span>
+    <span class="dot" aria-hidden="true"></span>
+    <span class="muted">
+      Last refreshed: {{ lastSuccessAt() ? (lastSuccessAt() | date: 'mediumTime') : '—' }}
+    </span>
+  </footer>
+</section>
