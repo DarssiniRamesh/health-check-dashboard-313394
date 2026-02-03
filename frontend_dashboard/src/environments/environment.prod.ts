@@ -21,7 +21,7 @@ function readRuntimeEnv(key: string): string | undefined {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
 }
 
-const defaultBackendApiUrl = 'http://localhost:3001';
+const defaultBackendApiUrl = 'https://vscode-internal-33473-beta.beta01.cloud.kavia.ai:3002';
 
 /**
  * Base URL for backend API calls.
