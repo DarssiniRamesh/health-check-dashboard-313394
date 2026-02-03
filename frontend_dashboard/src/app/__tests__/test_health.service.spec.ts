@@ -64,8 +64,13 @@ describe('test_HealthService', () => {
       expect(result.ok).toBeFalse();
 
       if (!result.ok) {
-        expect(typeof result.errorMessage).toBe('string');
-        expect(result.errorMessage.length).toBeGreaterThan(0);
+        // Narrow the union before accessing optional members.
+        if ('errorMessage' in result) {
+          expect(typeof result.errorMessage).toBe('string');
+          expect(result.errorMessage.length).toBeGreaterThan(0);
+        } else {
+          fail('Expected errorMessage to be present on ok=false HTTP error result');
+        }
       } else {
         fail('Expected ok=false on HTTP error');
       }
