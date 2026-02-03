@@ -1,0 +1,22 @@
+@import '../customers/customers.component.css';
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+select.input {
+  cursor: pointer;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.note-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

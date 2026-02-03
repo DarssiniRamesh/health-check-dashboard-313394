@@ -1,0 +1,33 @@
+@import '../customers/customers.component.css';
+
+.rate-display {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.rate-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-inline {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  width: 100px;
+}
+
+.input-inline:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.btn-success {
+  color: #10b981;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.12);
+}
