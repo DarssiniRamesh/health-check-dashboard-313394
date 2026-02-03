@@ -1,0 +1,96 @@
+<div class="dashboard-page">
+  <header class="page-header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1 class="title">Billing Dashboard</h1>
+        <p class="subtitle">Manage users, customers, hours, and reports</p>
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+      <span class="nav-icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/users" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">👥</span>
+      <span>Users</span>
+    </a>
+    <a routerLink="/customers" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">🏢</span>
+      <span>Customers</span>
+    </a>
+    <a routerLink="/categories" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">📋</span>
+      <span>Categories</span>
+    </a>
+    <a routerLink="/hours" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">⏱️</span>
+      <span>Billable Hours</span>
+    </a>
+    <a routerLink="/reports" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">📈</span>
+      <span>Reports</span>
+    </a>
+  </nav>
+
+  <main class="content">
+    <div class="alert error" *ngIf="error()">
+      <strong>Error:</strong> {{ error() }}
+    </div>
+
+    <div class="loading-state" *ngIf="loading() && !summary()">
+      <div class="spinner"></div>
+      <p>Loading dashboard...</p>
+    </div>
+
+    <div class="summary-grid" *ngIf="summary()">
+      <div class="summary-card">
+        <div class="card-icon customers">👥</div>
+        <div class="card-content">
+          <div class="card-label">Total Customers</div>
+          <div class="card-value">{{ summary()?.totalCustomers ?? 0 }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon users">🧑‍💼</div>
+        <div class="card-content">
+          <div class="card-label">Total Users</div>
+          <div class="card-value">{{ summary()?.totalUsers ?? 0 }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon revenue">💰</div>
+        <div class="card-content">
+          <div class="card-label">Total Revenue</div>
+          <div class="card-value">${{ (summary()?.totalRevenue ?? 0).toFixed(2) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="action-grid">
+        <a routerLink="/hours" class="action-card">
+          <span class="action-icon">⏱️</span>
+          <span class="action-title">Log Hours</span>
+          <span class="action-desc">Record billable time</span>
+        </a>
+        <a routerLink="/customers" class="action-card">
+          <span class="action-icon">🏢</span>
+          <span class="action-title">Add Customer</span>
+          <span class="action-desc">Create new customer</span>
+        </a>
+        <a routerLink="/reports" class="action-card">
+          <span class="action-icon">📈</span>
+          <span class="action-title">View Reports</span>
+          <span class="action-desc">Revenue & billing reports</span>
+        </a>
+      </div>
+    </div>
+  </main>
+</div>

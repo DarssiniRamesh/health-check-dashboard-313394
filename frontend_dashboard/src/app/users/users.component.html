@@ -1,0 +1,82 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="title">Users</h1>
+      <p class="subtitle">Manage system users</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">← Back</a>
+      <button class="btn btn-primary" (click)="toggleCreateForm()" type="button">
+        {{ showCreateForm() ? 'Cancel' : '+ Add User' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="alert error" *ngIf="error()">
+    <strong>Error:</strong> {{ error() }}
+  </div>
+
+  <div class="card" *ngIf="showCreateForm()">
+    <h2 class="card-title">Create New User</h2>
+    <form (ngSubmit)="createUser()" class="form">
+      <div class="form-group">
+        <label for="userName" class="label">Name *</label>
+        <input
+          type="text"
+          id="userName"
+          [(ngModel)]="newUser.name"
+          name="name"
+          class="input"
+          placeholder="John Doe"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="userEmail" class="label">Email *</label>
+        <input
+          type="email"
+          id="userEmail"
+          [(ngModel)]="newUser.email"
+          name="email"
+          class="input"
+          placeholder="john@example.com"
+          required
+        />
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="creating()">
+          <span class="spinner small" *ngIf="creating()"></span>
+          {{ creating() ? 'Creating...' : 'Create User' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="loading-state" *ngIf="loading() && users().length === 0">
+    <div class="spinner"></div>
+    <p>Loading users...</p>
+  </div>
+
+  <div class="card" *ngIf="!loading() || users().length > 0">
+    <h2 class="card-title">Users List ({{ users().length }})</h2>
+    <div class="table-wrapper">
+      <table class="table" *ngIf="users().length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users()">
+            <td>{{ user.id }}</td>
+            <td class="text-bold">{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="empty-state" *ngIf="users().length === 0">No users found. Create one to get started.</p>
+    </div>
+  </div>
+</div>

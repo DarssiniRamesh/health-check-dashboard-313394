@@ -1,0 +1,130 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="title">Billable Hours</h1>
+      <p class="subtitle">Log and track billable time</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">← Back</a>
+      <button class="btn btn-primary" (click)="toggleLogForm()" type="button">
+        {{ showLogForm() ? 'Cancel' : '+ Log Hours' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="alert error" *ngIf="error()">
+    <strong>Error:</strong> {{ error() }}
+  </div>
+
+  <div class="card" *ngIf="showLogForm()">
+    <h2 class="card-title">Log Billable Hours</h2>
+    <form (ngSubmit)="logHour()" class="form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="hourCustomer" class="label">Customer *</label>
+          <select id="hourCustomer" [(ngModel)]="newHour.customerId" name="customerId" class="input" required>
+            <option [value]="0">Select customer...</option>
+            <option *ngFor="let customer of customers()" [value]="customer.id">{{ customer.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="hourUser" class="label">User *</label>
+          <select id="hourUser" [(ngModel)]="newHour.userId" name="userId" class="input" required>
+            <option [value]="0">Select user...</option>
+            <option *ngFor="let user of users()" [value]="user.id">{{ user.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="hourCategory" class="label">Category *</label>
+          <select id="hourCategory" [(ngModel)]="newHour.categoryId" name="categoryId" class="input" required>
+            <option [value]="0">Select category...</option>
+            <option *ngFor="let category of categories()" [value]="category.id">
+              {{ category.name }} (${{ category.hourlyRate.toFixed(2) }}/hr)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="hourHours" class="label">Hours *</label>
+          <input
+            type="number"
+            id="hourHours"
+            [(ngModel)]="newHour.hours"
+            name="hours"
+            class="input"
+            placeholder="8.0"
+            step="0.25"
+            min="0.25"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="hourDate" class="label">Date *</label>
+          <input type="date" id="hourDate" [(ngModel)]="newHour.date" name="date" class="input" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="hourNote" class="label">Note</label>
+        <textarea
+          id="hourNote"
+          [(ngModel)]="newHour.note"
+          name="note"
+          class="input textarea"
+          placeholder="Description of work performed"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="logging()">
+          <span class="spinner small" *ngIf="logging()"></span>
+          {{ logging() ? 'Logging...' : 'Log Hours' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="loading-state" *ngIf="loading() && hours().length === 0">
+    <div class="spinner"></div>
+    <p>Loading billable hours...</p>
+  </div>
+
+  <div class="card" *ngIf="!loading() || hours().length > 0">
+    <h2 class="card-title">Recent Billable Hours ({{ hours().length }})</h2>
+    <div class="table-wrapper">
+      <table class="table" *ngIf="hours().length > 0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>User</th>
+            <th>Category</th>
+            <th>Hours</th>
+            <th>Rate</th>
+            <th>Total</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hour of hours()">
+            <td>{{ hour.dateLogged | date: 'shortDate' }}</td>
+            <td class="text-bold">{{ hour.customerName }}</td>
+            <td>{{ hour.userName }}</td>
+            <td>{{ hour.categoryName }}</td>
+            <td>{{ hour.hours.toFixed(2) }}</td>
+            <td>${{ hour.hourlyRate.toFixed(2) }}</td>
+            <td class="text-bold text-primary">${{ hour.lineTotal.toFixed(2) }}</td>
+            <td class="note-cell">{{ hour.note || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="empty-state" *ngIf="hours().length === 0">No billable hours logged yet. Log your first entry!</p>
+    </div>
+  </div>
+</div>
