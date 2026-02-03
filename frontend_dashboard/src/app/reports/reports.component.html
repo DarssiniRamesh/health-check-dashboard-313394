@@ -1,0 +1,239 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="title">Reports</h1>
+      <p class="subtitle">Generate billing and revenue reports</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">← Back</a>
+    </div>
+  </header>
+
+  <div class="report-selector">
+    <button
+      class="report-btn"
+      [class.active]="activeReport() === 'customer'"
+      (click)="selectReport('customer')"
+      type="button"
+    >
+      <span class="report-icon">🧾</span>
+      <span>Customer Bill</span>
+    </button>
+    <button
+      class="report-btn"
+      [class.active]="activeReport() === 'monthly'"
+      (click)="selectReport('monthly')"
+      type="button"
+    >
+      <span class="report-icon">📅</span>
+      <span>Monthly Report</span>
+    </button>
+    <button
+      class="report-btn"
+      [class.active]="activeReport() === 'revenue'"
+      (click)="selectReport('revenue')"
+      type="button"
+    >
+      <span class="report-icon">💵</span>
+      <span>Revenue Summary</span>
+    </button>
+  </div>
+
+  <div class="alert error" *ngIf="error()">
+    <strong>Error:</strong> {{ error() }}
+  </div>
+
+  <!-- Customer Bill Report -->
+  <div *ngIf="activeReport() === 'customer'">
+    <div class="card">
+      <h2 class="card-title">Customer Bill Report</h2>
+      <div class="form">
+        <div class="form-group">
+          <label for="customerSelect" class="label">Select Customer</label>
+          <div class="input-group">
+            <select
+              id="customerSelect"
+              [(ngModel)]="selectedCustomerId"
+              [ngModelOptions]="{standalone: true}"
+              class="input"
+            >
+              <option [value]="0">Choose a customer...</option>
+              <option *ngFor="let customer of customers()" [value]="customer.id">{{ customer.name }}</option>
+            </select>
+            <button class="btn btn-primary" (click)="generateCustomerBill()" [disabled]="loading()" type="button">
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="customerBillReport()">
+      <h2 class="card-title">{{ customerBillReport()!.customerName }} - Bill Report</h2>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>User</th>
+              <th>Category</th>
+              <th>Hours</th>
+              <th>Rate</th>
+              <th>Total</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of customerBillReport()!.lineItems">
+              <td>{{ item.dateLogged | date: 'shortDate' }}</td>
+              <td>{{ item.userName }}</td>
+              <td>{{ item.categoryName }}</td>
+              <td>{{ item.hours.toFixed(2) }}</td>
+              <td>${{ item.hourlyRate.toFixed(2) }}</td>
+              <td>${{ item.lineTotal.toFixed(2) }}</td>
+              <td class="note-cell">{{ item.note || '—' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="3"><strong>Total</strong></td>
+              <td><strong>{{ customerBillReport()!.totalHours.toFixed(2) }}</strong></td>
+              <td></td>
+              <td><strong>${{ customerBillReport()!.totalAmount.toFixed(2) }}</strong></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Report -->
+  <div *ngIf="activeReport() === 'monthly'">
+    <div class="card">
+      <h2 class="card-title">Monthly Report</h2>
+      <div class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="yearSelect" class="label">Year</label>
+            <input
+              type="number"
+              id="yearSelect"
+              [(ngModel)]="selectedYear"
+              [ngModelOptions]="{standalone: true}"
+              class="input"
+              min="2020"
+              max="2100"
+            />
+          </div>
+          <div class="form-group">
+            <label for="monthSelect" class="label">Month</label>
+            <select id="monthSelect" [(ngModel)]="selectedMonth" [ngModelOptions]="{standalone: true}" class="input">
+              <option [value]="1">January</option>
+              <option [value]="2">February</option>
+              <option [value]="3">March</option>
+              <option [value]="4">April</option>
+              <option [value]="5">May</option>
+              <option [value]="6">June</option>
+              <option [value]="7">July</option>
+              <option [value]="8">August</option>
+              <option [value]="9">September</option>
+              <option [value]="10">October</option>
+              <option [value]="11">November</option>
+              <option [value]="12">December</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="label">&nbsp;</label>
+            <button class="btn btn-primary" (click)="generateMonthlyReport()" [disabled]="loading()" type="button">
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="monthlyReport()">
+      <h2 class="card-title">Monthly Report - {{ monthlyReport()!.month }}/{{ monthlyReport()!.year }}</h2>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Total Hours</th>
+              <th>Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of monthlyReport()!.rows">
+              <td class="text-bold">{{ row.customerName }}</td>
+              <td>{{ row.totalHours.toFixed(2) }}</td>
+              <td>${{ row.totalAmount.toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="empty-state" *ngIf="monthlyReport()!.rows.length === 0">No data for this month.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Summary -->
+  <div *ngIf="activeReport() === 'revenue'">
+    <div class="loading-state" *ngIf="loading() && !revenueSummary()">
+      <div class="spinner"></div>
+      <p>Loading revenue summary...</p>
+    </div>
+
+    <div *ngIf="revenueSummary()" class="revenue-grid">
+      <div class="card">
+        <h2 class="card-title">Revenue by Customer</h2>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Total Hours</th>
+                <th>Avg Rate</th>
+                <th>Total Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of revenueSummary()!.byCustomer">
+                <td class="text-bold">{{ row.customerName }}</td>
+                <td>{{ row.totalHours.toFixed(2) }}</td>
+                <td>${{ row.avgRate.toFixed(2) }}</td>
+                <td class="text-primary text-bold">${{ row.totalRevenue.toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="empty-state" *ngIf="revenueSummary()!.byCustomer.length === 0">No customer data available.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Revenue by Category</h2>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Hourly Rate</th>
+                <th>Total Hours</th>
+                <th>Total Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of revenueSummary()!.byCategory">
+                <td class="text-bold">{{ row.categoryName }}</td>
+                <td>${{ row.hourlyRate.toFixed(2) }}</td>
+                <td>{{ row.totalHours.toFixed(2) }}</td>
+                <td class="text-primary text-bold">${{ row.totalRevenue.toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="empty-state" *ngIf="revenueSummary()!.byCategory.length === 0">No category data available.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
