@@ -20,7 +20,8 @@ export interface HealthCheckResult {
 export class HealthService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = environment.BACKEND_API_URL?.replace(/\/$/, '') || 'http://localhost:3001';
+  private readonly baseUrl =
+    (environment.apiBaseUrl ?? environment.BACKEND_API_URL ?? 'http://localhost:3001').replace(/\/$/, '');
 
   /**
    * Fetches the backend health information from `/health`.
